@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buck Converter Synthesis Tool</title>
+    <meta name="description" content="A reactive synthesis tool generating Inductance vs Frequency curves.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Buck Converter <span>Synthesis</span></h1>
+            <p>Interactive Trade-Off Analysis: Inductance vs. Switching Frequency</p>
+            <div class="config-badge">Active Design: Regulated 52V | 2-Phase LTC7810 (600W Module)</div>
+        </header>
+
+        <main class="calculator-grid">
+            <!-- Inputs Section -->
+            <section class="glass-card inputs-section">
+                <h2>Boundary Conditions</h2>
+                
+                <div class="input-group">
+                    <label for="vin">Input Voltage (Vin) <span class="unit">V</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="vin-slider" min="90" max="200" step="1" value="120">
+                        <input type="number" id="vin" value="120" step="1">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="vout">Output Voltage (Vout) <span class="unit">V</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="vout-slider" min="12" max="60" step="1" value="52">
+                        <input type="number" id="vout" value="52" step="1">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="pout">Total Output Power (Pout) <span class="unit">W</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="pout-slider" min="0" max="1500" step="10" value="600">
+                        <input type="number" id="pout" value="600" step="10">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="phases">Number of Phases (N) <span class="unit">#</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="phases-slider" min="1" max="8" step="1" value="2">
+                        <input type="number" id="phases" value="2" step="1" min="1">
+                    </div>
+                </div>
+
+                <div class="input-group highlight-input">
+                    <label for="ripple">Target Phase Ripple <span class="unit">%</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="ripple-slider" min="10" max="100" step="1" value="37">
+                        <input type="number" id="ripple" value="37" step="1">
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 2rem;">Component Specs</h2>
+                <div class="input-group">
+                    <label for="inductance">Selected Inductance (L) <span class="unit">µH</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="inductance-slider" min="10" max="330" step="1" value="82">
+                        <input type="number" id="inductance" value="82" step="1">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="isat">Saturation Current (Isat) <span class="unit">A</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="isat-slider" min="1" max="50" step="0.5" value="9">
+                        <input type="number" id="isat" value="9" step="0.5">
+                    </div>
+                </div>
+                
+                <div class="static-results">
+                    <div class="result-row"><span>Duty Cycle:</span> <strong id="res-duty">-- %</strong></div>
+                    <div class="result-row"><span>Phase Current:</span> <strong id="res-iphase">-- A</strong></div>
+                    <div class="result-row"><span>Target Ripple (ΔIL):</span> <strong id="res-ripple-amps">-- A</strong></div>
+                    <div class="result-row"><span>Required Fsw:</span> <strong id="res-fsw">-- kHz</strong></div>
+                    <div class="result-row"><span>Peak Current:</span> <strong id="res-ipeak">-- A</strong></div>
+                    <div id="sat-warning" style="display:none; color: var(--alert); font-size: 0.85rem; text-align: center; margin-top: 0.5rem; font-weight: 600;">⚠️ PEAK CURRENT EXCEEDS SATURATION!</div>
+                </div>
+            </section>
+
+            <!-- Graph Section -->
+            <section class="glass-card graph-section">
+                <h2>Inductance vs. Frequency Curve</h2>
+                <div class="chart-container">
+                    <canvas id="tradeoffChart"></canvas>
+                </div>
+                <p class="chart-note">Any point on this line satisfies your Target Ripple boundary. Move your cursor over the line to find exact (L, Fsw) pairs.</p>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
