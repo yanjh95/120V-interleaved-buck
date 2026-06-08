@@ -58,6 +58,6 @@ Driven strictly by the <$150 cost limit and the thermal constraints of a sealed 
 Each modular PCB utilizes a **Silicon (Si) 2-Phase Interleaved Synchronous Buck Converter** architecture. By using a modular approach, the design achieves the benefits of 4-phase interleaving at the system level while dramatically simplifying the layout:
 * **Controller:** Each PCB utilizes **one dual-channel Analog Devices LTC7810 controller**. The two channels are natively run 180° out-of-phase, completely eliminating the need for an external clock synchronization oscillator (like the LTC6908-2) and simplifying layout routing.
 * **Operating Point:** The output rail is regulated to **52V**, keeping the duty cycle extremely close to 50% ($D = 50.0\%$ at nominal 104V input) to maximize input and output ripple current cancellation.
-* **Power Stage Components:** Each board is populated with high-performance **82 µH Vishay inductors** (providing 31.8% saturation headroom) and **Infineon BSC093N15NS5** MOSFETs, meeting both safety margins and the strict <$150 BOM budget limit.
+* **Power Stage Components:** Each board is populated with high-performance **82 µH Vishay inductors** (providing 31.8% saturation headroom) and **onsemi FDMS86252** MOSFETs, meeting both safety margins and the strict <$150 BOM budget limit.
 
 
