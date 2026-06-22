@@ -55,3 +55,37 @@ See **[Rev1 Bring-Up Checklist](rev1-bringup-checklist.md)** for the step-by-ste
 
 ### Layer renders
 Additional per-layer renders (top copper, inner planes, bottom thermal interface) are in the [`Rev1 layout photos/`](Rev1%20layout%20photos/) folder.
+
+---
+
+## Hardware V2 — Stacked PCB EMI Cancellation Package
+
+**Status: Architecture study complete — pending Rev1 validation before implementation.**
+
+V2 introduces a **mechanical packaging strategy** designed to achieve far-field radiated EMI cancellation across the entire 1.2kW converter assembly. Rather than treating the two 600W PCBs as independent modules mounted side-by-side, V2 **stacks them face-to-face** with a shared aluminum heatsink between them, creating a compact sandwich structure where the electromagnetic fields of opposing phases cancel in all directions.
+
+![Whiteboard sketch — stacked PCB EMI cancellation concept showing mirrored current loops and B-field cancellation](V2%20design%20photos/stacked-pcb-emi-cancellation-whiteboard.png)
+
+*Whiteboard sketch illustrating the stacked PCB concept: two mirrored boards produce anti-parallel current loops (red/blue arrows), resulting in opposing magnetic field vectors (B) that cancel in the far field.*
+
+### Core Principle
+
+The two PCBs use **identical but mirrored layouts**. When stacked face-to-face, the high-di/dt switching current loops on each board circulate in **opposite rotational directions** as seen from outside the sandwich. The 4 phases across both boards are linked as follows:
+
+| Pair | Phases | Timing | Loop Geometry | Result |
+|:---|:---:|:---:|:---:|:---|
+| **Pair A** | Phase 1 (PCB1) ↔ Phase 3 (PCB2) | Switch at **0°** simultaneously | Anti-parallel (mirrored) | Magnetic dipole cancellation |
+| **Pair B** | Phase 2 (PCB1) ↔ Phase 4 (PCB2) | Switch at **180°** simultaneously | Anti-parallel (mirrored) | Magnetic dipole cancellation |
+
+At any given instant, one pair of mirrored phases is conducting while the other pair is 180° offset — and **both pairs independently achieve field cancellation**. The net far-field magnetic dipole moment of the assembly is driven to near zero, with residual radiation falling to the much weaker quadrupole level (**20–35 dB reduction** at the switching fundamental and low harmonics).
+
+### Key Design Elements
+
+* **Synchronized Clocking:** Both LTC7810 controllers share an external clock signal on their `PLLIN/MODE` pins, ensuring Phase 1 and Phase 3 switch on the exact same rising edge (0° offset between modules). The 180° interleaving between phases on each board is handled natively by the LTC7810.
+* **Mirrored Layout:** PCB2 is a geometric mirror of PCB1. When flipped upside-down in the sandwich, what appears as a clockwise current loop from PCB2's component side becomes counter-clockwise from outside — creating the anti-parallel geometry needed for cancellation.
+* **Thermal Heatsink Sandwich:** A 5–10mm aluminum heatsink between the boards serves purely as a thermal conductor. At 150 kHz, the skin depth in aluminum is ~0.21mm, so the heatsink attenuates inter-board near-field coupling to near zero — but this is irrelevant to far-field cancellation, since both boards appear at the same point in space to any EMI detector (λ = 2,000m at 150 kHz, board separation = λ/200,000).
+* **Electrical Isolation:** Gap pads with ≥1000V dielectric withstand rating isolate both PCBs from the aluminum heatsink, which is tied to chassis ground through Y-capacitors.
+
+### Full Architecture Document
+
+See **[Stacked Dual-Module Architecture](stacked-module-architecture.md)** for the complete physics derivation, synchronization implementation details, mechanical assembly requirements, and expected EMI improvement tables.
